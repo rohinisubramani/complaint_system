@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Complaint Management System{% endblock %}</title>
+  
+  <!-- FontAwesome Icons & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="{% url 'home' %}" class="nav-brand">
+      <i class="fa-solid fa-headset"></i>
+      <span>ResolveHub</span>
+    </a>
+
+    <ul class="nav-menu">
+      <li><a href="{% url 'home' %}" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+      
+      {% if request.session.user_id %}
+        {% if request.session.role == 'admin' %}
+          <li><a href="{% url 'admin_dashboard' %}" class="nav-link"><i class="fa-solid fa-chart-line"></i> Admin Dashboard</a></li>
+          <li><a href="{% url 'admin_complaints' %}" class="nav-link"><i class="fa-solid fa-list-check"></i> All Complaints</a></li>
+          <li><a href="{% url 'admin_users' %}" class="nav-link"><i class="fa-solid fa-users"></i> Manage Users</a></li>
+          <li><span class="nav-badge badge-admin"><i class="fa-solid fa-shield-halved"></i> Admin</span></li>
+        {% else %}
+          <li><a href="{% url 'user_dashboard' %}" class="nav-link"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+          <li><a href="{% url 'submit_complaint' %}" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Submit Complaint</a></li>
+          <li><a href="{% url 'my_complaints' %}" class="nav-link"><i class="fa-solid fa-folder-open"></i> My Complaints</a></li>
+          <li><a href="{% url 'user_profile' %}" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a></li>
+          <li><span class="nav-badge badge-student"><i class="fa-solid fa-user-graduate"></i> Student</span></li>
+        {% endif %}
+        <li><a href="{% url 'user_logout' %}" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+        <li><a href="{% url 'user_login' %}" class="nav-link"><i class="fa-solid fa-right-to-bracket"></i> Student Login</a></li>
+        <li><a href="{% url 'user_register' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+        <li><a href="{% url 'admin_login' %}" class="nav-link" style="color: #a78bfa;"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="container">
+    <!-- ALERT FLASH MESSAGES -->
+    {% if messages %}
+      <div class="alerts-container">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            <span><i class="fa-solid fa-circle-info"></i> {{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>&copy; {% now "Y" %} Complaint Management System. Built with Django & MongoDB.</p>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

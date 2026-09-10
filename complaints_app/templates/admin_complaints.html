@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}All Complaints - Admin Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><i class="fa-solid fa-list-check"></i> Manage All Complaints</h1>
+    <p class="page-subtitle">Search, filter, update status, respond to or delete complaints.</p>
+  </div>
+  <div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline">&larr; Admin Dashboard</a>
+  </div>
+</div>
+
+<!-- SEARCH & FILTER BAR -->
+<form method="GET" action="{% url 'admin_complaints' %}" class="filter-bar">
+  <div class="filter-group" style="flex: 2;">
+    <label class="form-label" style="margin-bottom:0;" for="searchInput"><i class="fa-solid fa-magnifying-glass"></i> Search:</label>
+    <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search by ID (e.g. CMP-1001), Title, Student Name..." value="{{ search_query|default:'' }}" onkeyup="filterTableBySearch('searchInput', 'adminComplaintsTable')">
+  </div>
+
+  <div class="filter-group">
+    <label class="form-label" style="margin-bottom:0;" for="statusSelect"><i class="fa-solid fa-filter"></i> Status:</label>
+    <select name="status" id="statusSelect" class="form-select" onchange="this.form.submit()">
+      <option value="">All Statuses</option>
+      {% for st in statuses %}
+        <option value="{{ st }}" {% if selected_status == st %}selected{% endif %}>{{ st }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label class="form-label" style="margin-bottom:0;" for="categorySelect"><i class="fa-solid fa-tags"></i> Category:</label>
+    <select name="category" id="categorySelect" class="form-select" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  {% if search_query or selected_status or selected_category %}
+    <div>
+      <a href="{% url 'admin_complaints' %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-xmark"></i> Clear Filters</a>
+    </div>
+  {% endif %}
+</form>
+
+<!-- COMPLAINTS TABLE -->
+<div class="card">
+  {% if complaints %}
+    <div class="table-wrapper">
+      <table class="table" id="adminComplaintsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comp in complaints %}
+            <tr>
+              <td><strong style="color: var(--primary);">{{ comp.complaint_id }}</strong></td>
+              <td>
+                <strong>{{ comp.user_name }}</strong><br>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ comp.user_id }}</span>
+              </td>
+              <td><strong>{{ comp.title }}</strong></td>
+              <td><span style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">{{ comp.category }}</span></td>
+              <td><i class="fa-solid fa-location-dot" style="color: var(--text-muted);"></i> {{ comp.location }}</td>
+              <td>{{ comp.created_at|date:"M d, Y" }}</td>
+              <td>
+                <span class="status-badge badge-{{ comp.status|cut:' ' }}">
+                  <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> {{ comp.status }}
+                </span>
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <a href="{% url 'complaint_detail' comp.complaint_id %}" class="btn btn-outline btn-sm" title="View Full Details">
+                  <i class="fa-solid fa-eye"></i> Details
+                </a>
+                
+                <button type="button" class="btn btn-primary btn-sm" onclick="openAdminModal('{{ comp.complaint_id }}', '{{ comp.status }}', '{{ comp.admin_response|escapejs }}')">
+                  <i class="fa-solid fa-pen-to-square"></i> Update
+                </button>
+
+                <form method="POST" action="{% url 'admin_delete_complaint' comp.complaint_id %}" style="display: inline;" onsubmit="return confirm('WARNING: Are you sure you want to delete complaint {{ comp.complaint_id }}?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm" title="Delete Complaint">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem; color: #cbd5e1;"><i class="fa-solid fa-magnifying-glass"></i></div>
+      <h3>No complaints found</h3>
+      <p style="font-size: 0.9rem;">No complaint records match your current search or filter criteria.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- UPDATE STATUS & ADMIN RESPONSE MODAL -->
+<div class="modal" id="updateModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-pen-to-square"></i> Update Complaint <span id="modalComplaintId" style="color: var(--primary);"></span></h3>
+      <button class="modal-close" onclick="closeAdminModal()">&times;</button>
+    </div>
+    
+    <form method="POST" id="updateForm" action="">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label" for="modalStatusSelect">Complaint Status</label>
+        <select name="status" id="modalStatusSelect" class="form-select" required>
+          {% for st in statuses %}
+            <option value="{{ st }}">{{ st }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modalAdminResponse">Admin Response / Notes for Student</label>
+        <textarea name="admin_response" id="modalAdminResponse" class="form-control" rows="4" placeholder="Enter investigation status, steps taken, or resolution note..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-outline" onclick="closeAdminModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-floppy-disk"></i> Save & Send Response
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

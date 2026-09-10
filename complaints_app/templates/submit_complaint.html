@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Complaint - Complaint Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><i class="fa-solid fa-pen-to-square"></i> Submit a New Complaint</h1>
+    <p class="page-subtitle">Provide accurate details so administrators can quickly process and resolve your issue.</p>
+  </div>
+  <div>
+    <a href="{% url 'user_dashboard' %}" class="btn btn-outline">
+      &larr; Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+  <form method="POST" action="{% url 'submit_complaint' %}" id="complaintForm">
+    {% csrf_token %}
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="title"><i class="fa-solid fa-heading"></i> Complaint Title *</label>
+        <input type="text" id="title" name="title" class="form-control" placeholder="Brief summary of the issue..." value="{{ title|default:'' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="category"><i class="fa-solid fa-tags"></i> Complaint Category *</label>
+        <select id="category" name="category" class="form-select" required>
+          <option value="" disabled {% if not category %}selected{% endif %}>Select Category...</option>
+          {% for cat in categories %}
+            <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="location"><i class="fa-solid fa-location-dot"></i> Issue Location *</label>
+      <input type="text" id="location" name="location" class="form-control" placeholder="e.g. Hostel Block B - Room 204 / Library Ground Floor" value="{{ location|default:'' }}" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="description"><i class="fa-solid fa-align-left"></i> Detailed Description *</label>
+      <textarea id="description" name="description" class="form-control" rows="5" placeholder="Explain the problem in detail, steps to reproduce, or relevant urgency..." required>{{ description|default:'' }}</textarea>
+    </div>
+
+    <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+      <a href="{% url 'user_dashboard' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-paper-plane"></i> Submit Complaint
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

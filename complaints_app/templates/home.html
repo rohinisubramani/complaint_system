@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Complaint Management System{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 3.5rem 2rem; background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);">
+  <div style="font-size: 3.5rem; color: var(--primary); margin-bottom: 1rem;">
+    <i class="fa-solid fa-bullhorn"></i>
+  </div>
+  <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main);">
+    Student Complaint Management System
+  </h1>
+  <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2rem auto;">
+    A simple, efficient platform for students to report campus issues—Academic, Hostel, Wi-Fi, Infrastructure—and track their resolution in real-time.
+  </p>
+  
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    {% if request.session.user_id %}
+      {% if request.session.role == 'admin' %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary" style="padding: 0.8rem 1.75rem; font-size: 1.05rem;">
+          <i class="fa-solid fa-chart-line"></i> Go to Admin Dashboard
+        </a>
+      {% else %}
+        <a href="{% url 'submit_complaint' %}" class="btn btn-primary" style="padding: 0.8rem 1.75rem; font-size: 1.05rem;">
+          <i class="fa-solid fa-plus"></i> Submit New Complaint
+        </a>
+        <a href="{% url 'user_dashboard' %}" class="btn btn-outline" style="padding: 0.8rem 1.75rem; font-size: 1.05rem;">
+          <i class="fa-solid fa-gauge"></i> View My Dashboard
+        </a>
+      {% endif %}
+    {% else %}
+      <a href="{% url 'user_register' %}" class="btn btn-primary" style="padding: 0.8rem 1.75rem; font-size: 1.05rem;">
+        <i class="fa-solid fa-user-plus"></i> Student Register
+      </a>
+      <a href="{% url 'user_login' %}" class="btn btn-outline" style="padding: 0.8rem 1.75rem; font-size: 1.05rem;">
+        <i class="fa-solid fa-right-to-bracket"></i> Student Login
+      </a>
+      <a href="{% url 'admin_login' %}" class="btn btn-secondary" style="padding: 0.8rem 1.75rem; font-size: 1.05rem;">
+        <i class="fa-solid fa-shield-halved"></i> Admin Portal
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- FEATURES GRID -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+  <div class="card" style="text-align: center;">
+    <div style="font-size: 2.2rem; color: #0ea5e9; margin-bottom: 0.75rem;">
+      <i class="fa-solid fa-paper-plane"></i>
+    </div>
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">Easy Complaint Submission</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Categorize your issues (Academic, Hostel, Wi-Fi, Infrastructure) and provide exact location details.</p>
+  </div>
+
+  <div class="card" style="text-align: center;">
+    <div style="font-size: 2.2rem; color: #f59e0b; margin-bottom: 0.75rem;">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+    </div>
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">Live Status Updates</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Track your complaints from Pending to In Progress and Resolved with admin response updates.</p>
+  </div>
+
+  <div class="card" style="text-align: center;">
+    <div style="font-size: 2.2rem; color: #10b981; margin-bottom: 0.75rem;">
+      <i class="fa-solid fa-shield-cat"></i>
+    </div>
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">Role-Based Administration</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Administrators can search, filter, respond, update status, and manage all registered campus users.</p>
+  </div>
+</div>
+{% endblock %}

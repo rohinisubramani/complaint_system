@@ -1,0 +1,8 @@
+Django==4.2.30
+pymongo==4.17.0
+python-dotenv==1.2.2
+djongo==1.2.31
+dnspython==2.8.0
+asgiref==3.11.1
+sqlparse==0.5.5
+tzdata==2025.2

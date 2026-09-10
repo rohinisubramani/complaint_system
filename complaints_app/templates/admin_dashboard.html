@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Complaint Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title" style="color: #4c1d95;"><i class="fa-solid fa-shield-halved"></i> Admin Control Dashboard</h1>
+    <p class="page-subtitle">Overview of campus complaints and user accounts</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="{% url 'admin_complaints' %}" class="btn btn-primary">
+      <i class="fa-solid fa-list-check"></i> Manage All Complaints
+    </a>
+    <a href="{% url 'admin_users' %}" class="btn btn-secondary">
+      <i class="fa-solid fa-users"></i> Registered Users
+    </a>
+  </div>
+</div>
+
+<!-- STATS CARDS -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon total"><i class="fa-solid fa-folder-open"></i></div>
+    <div class="stat-info">
+      <h3>{{ stats.total }}</h3>
+      <p>Total Complaints</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon pending"><i class="fa-solid fa-hourglass-half"></i></div>
+    <div class="stat-info">
+      <h3>{{ stats.pending }}</h3>
+      <p>Pending Review</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon progress"><i class="fa-solid fa-spinner"></i></div>
+    <div class="stat-info">
+      <h3>{{ stats.in_progress }}</h3>
+      <p>In Progress</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon resolved"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-info">
+      <h3>{{ stats.resolved }}</h3>
+      <p>Resolved</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon users"><i class="fa-solid fa-users"></i></div>
+    <div class="stat-info">
+      <h3>{{ total_users }}</h3>
+      <p>Registered Users</p>
+    </div>
+  </div>
+</div>
+
+<!-- RECENT COMPLAINTS TABLE -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">
+      <i class="fa-solid fa-list-check"></i> Recent Complaints Received
+    </h3>
+    <a href="{% url 'admin_complaints' %}" class="btn btn-outline btn-sm">View All & Search &rarr;</a>
+  </div>
+
+  {% if recent_complaints %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comp in recent_complaints %}
+            <tr>
+              <td><strong style="color: var(--primary);">{{ comp.complaint_id }}</strong></td>
+              <td><strong>{{ comp.user_name }}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">{{ comp.user_id }}</span></td>
+              <td>{{ comp.title }}</td>
+              <td><span style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">{{ comp.category }}</span></td>
+              <td>{{ comp.created_at|date:"M d, Y" }}</td>
+              <td>
+                <span class="status-badge badge-{{ comp.status|cut:' ' }}">
+                  <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> {{ comp.status }}
+                </span>
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <a href="{% url 'complaint_detail' comp.complaint_id %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-pen-to-square"></i> Manage
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+      <p>No complaints submitted in the database.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

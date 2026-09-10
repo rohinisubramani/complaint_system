@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Registered Users - Admin Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><i class="fa-solid fa-users"></i> Registered Users Directory</h1>
+    <p class="page-subtitle">List of all registered students and system administrators (Total: <strong>{{ total_users }}</strong>)</p>
+  </div>
+  <div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline">&larr; Admin Dashboard</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
+  <div style="display: flex; align-items: center; gap: 0.75rem;">
+    <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+    <input type="text" id="userSearchInput" class="form-control" placeholder="Quick search user by name, email, or role..." onkeyup="filterTableBySearch('userSearchInput', 'usersTable')">
+  </div>
+</div>
+
+<div class="card">
+  {% if users %}
+    <div class="table-wrapper">
+      <table class="table" id="usersTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Registration Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><strong>{{ u.name }}</strong></td>
+              <td>{{ u.email }}</td>
+              <td>
+                {% if u.role == 'admin' %}
+                  <span class="nav-badge badge-admin"><i class="fa-solid fa-shield-halved"></i> Admin</span>
+                {% else %}
+                  <span class="nav-badge badge-student"><i class="fa-solid fa-user-graduate"></i> Student</span>
+                {% endif %}
+              </td>
+              <td>{{ u.created_at|date:"F d, Y @ H:i" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+      <p>No registered users found.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

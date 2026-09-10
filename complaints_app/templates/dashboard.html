@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Student Complaint System{% endblock %}
+
+{% block content %}
+<!-- WELCOME BANNER -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><i class="fa-solid fa-gauge"></i> Student Dashboard</h1>
+    <p class="page-subtitle">Welcome back, <strong>{{ user_name }}</strong>! Track and manage your submitted complaints.</p>
+  </div>
+  <div>
+    <a href="{% url 'submit_complaint' %}" class="btn btn-primary">
+      <i class="fa-solid fa-plus"></i> Submit New Complaint
+    </a>
+  </div>
+</div>
+
+<!-- STATS CARDS GRID -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon total">
+      <i class="fa-solid fa-folder-open"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ stats.total }}</h3>
+      <p>Total Complaints</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon pending">
+      <i class="fa-solid fa-hourglass-half"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ stats.pending }}</h3>
+      <p>Pending Complaints</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon progress">
+      <i class="fa-solid fa-spinner"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ stats.in_progress }}</h3>
+      <p>In-Progress Complaints</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon resolved">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ stats.resolved }}</h3>
+      <p>Resolved Complaints</p>
+    </div>
+  </div>
+</div>
+
+<!-- RECENT COMPLAINTS TABLE -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">
+      <i class="fa-solid fa-clock-rotate-left"></i> Recent Complaints
+    </h3>
+    <a href="{% url 'my_complaints' %}" class="btn btn-outline btn-sm">View All Complaints &rarr;</a>
+  </div>
+
+  {% if recent_complaints %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Complaint ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for complaint in recent_complaints %}
+            <tr>
+              <td><strong style="color: var(--primary);">{{ complaint.complaint_id }}</strong></td>
+              <td>{{ complaint.title }}</td>
+              <td><span style="background: #f1f5f9; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">{{ complaint.category }}</span></td>
+              <td>{{ complaint.created_at|date:"M d, Y" }}</td>
+              <td>
+                <span class="status-badge badge-{{ complaint.status|cut:' ' }}">
+                  <i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> {{ complaint.status }}
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <a href="{% url 'complaint_detail' complaint.complaint_id %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-eye"></i> View
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"><i class="fa-solid fa-inbox"></i></div>
+      <p>No complaints submitted yet.</p>
+      <a href="{% url 'submit_complaint' %}" class="btn btn-primary btn-sm" style="margin-top: 0.75rem;">
+        <i class="fa-solid fa-plus"></i> Submit Your First Complaint
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

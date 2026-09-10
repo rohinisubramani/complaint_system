@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Login - Complaint System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card" style="border-top: 4px solid #7c3aed;">
+    <div class="auth-header">
+      <div style="font-size: 2.5rem; color: #7c3aed; margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <h2>Admin Login Portal</h2>
+      <p>Authorized administrator access only</p>
+    </div>
+
+    <form method="POST" action="{% url 'admin_login' %}">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="email"><i class="fa-solid fa-envelope"></i> Admin Email</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="admin@college.edu" value="{{ email|default:'' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="Enter admin password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background-color: #7c3aed;">
+        <i class="fa-solid fa-shield-halved"></i> Login as Administrator
+      </button>
+    </form>
+
+    <div class="auth-footer" style="font-size: 0.85rem;">
+      <p style="color: #64748b; margin-bottom: 0.5rem;">Default Demo Admin Credentials:</p>
+      <code style="background: #f1f5f9; padding: 0.3rem 0.6rem; border-radius: 4px; color: #475569;">Email: admin@college.edu | Pass: admin123</code>
+      <div style="margin-top: 1rem;">
+        <a href="{% url 'user_login' %}">&larr; Back to Student Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
